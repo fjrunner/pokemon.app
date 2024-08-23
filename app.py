@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import requests
 
 # CSVファイルのパスとカラム名
 csv_file = 'pokemon_names_with_katakana.csv'
@@ -161,14 +162,60 @@ if st.session_state.game_started and st.session_state.current_pokemon:
         if st.button("もう一度あそぶ"):
             reset_game()
 
-# これまでのやり取りの履歴を表示
+# CSVファイルのidカラムを定義
+id_column = 'id'
+
+# カタカナ名からポケモンIDを取得
+# get_pokemon_id_from_katakanaという関数に定義
+def get_pokemon_id_from_katakana(katakana_name):
+    record = df[df[katakana_column] == katakana_name]
+    if not record.empty:
+        return record[id_column].values[0]
+    return None
+
+# ポケモンの画像を表示する関数
+def get_pokemon_image(pokemon_name):
+    pokemon_id = get_pokemon_id_from_katakana(pokemon_name)
+    if pokemon_id:
+        url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            image_url = data['sprites']['front_default'] # front_default=正面向いているポケモン画像のURLを取得
+            return image_url
+        return None
+
+    # これまでのやり取りの履歴を表示
 if st.session_state.history:
     st.write("これまでのやり取り:")
-    history_text = " → ".join(f"{pokemon} → {user}" for pokemon, user in st.session_state.history)
-    # 現在のポケモンを履歴の一番右に追加
-    if st.session_state.current_pokemon:
-        history_text += f" → {st.session_state.current_pokemon}"
-    st.write(history_text)
-else:
-    st.write(" ")
+    for idx, (pokemon, user) in enumerate(st.session_state.history, 1):
+        col1, col2, col3, col4 = st.columns([1, 2, 2, 6], gap="small", vertical_alignment="center")
+        with col1:
+            st.write(f"{idx * 2 - 1}")  # トレーナーの番号
+        with col2:
+            st.write("トレーナー")
+        with col3:
+            pokemon_image_url = get_pokemon_image(pokemon)
+            if pokemon_image_url:
+                st.image(pokemon_image_url, width=70)  # 画像を表示
+        with col4:
+            st.write(pokemon)
+        # 罫線を引く
+        st.markdown("<hr style='margin: 0;'>", unsafe_allow_html=True)
+
+        col1, col2, col3, col4 = st.columns([1, 2, 2, 6], gap="small", vertical_alignment="center")
+        with col1:
+            st.write(f"{idx * 2}")  # 自分の番号
+        with col2:
+            st.write("あなた")
+        with col3:
+            user_image_url = get_pokemon_image(user)
+            if user_image_url:
+                st.image(user_image_url, width=70)  # 画像を表示
+        with col4:
+            st.write(user)
+        # 罫線を引く
+        st.markdown("<hr style='margin: 0;'>", unsafe_allow_html=True)
+
+
 
