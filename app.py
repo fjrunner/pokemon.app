@@ -11,7 +11,7 @@ play_bgm_in_sidebar()
 st.sidebar.caption("©2024 Pokémon. ©1995-2024 Nintendo/Creatures Inc./GAME FREAK inc.<br>これは「Pokémon Game Sound Library」の利用規約に同意し作成されたコンテンツです。", unsafe_allow_html=True)
 
 # CSVファイルのパスとカラム名
-csv_file = 'pokemon_names_with_katakana.csv'
+csv_file = 'pokemon_list.csv'
 katakana_column = 'katakana_name'
 
 # CSVを読み込む
@@ -139,11 +139,11 @@ if st.session_state.game_started and st.session_state.current_pokemon:
                 # 1. 頭文字が正しくしりとりになっているか
                 last_char = get_last_char(st.session_state.current_pokemon)
                 if not user_input.startswith(last_char):
-                    st.write(f"{last_char}からはじまるポケモンをいれてね。")
+                    st.warning(f"{last_char}からはじまるポケモンをいれてください。")
                 
                 # 2. 入力したポケモンが存在するか
                 elif not is_valid_pokemon(user_input):
-                    st.write("そのポケモンはいません。ただしいポケモンのなまえをいれてね。")
+                    st.warning("そのポケモンはいません。ただしいポケモンのなまえをいれてください。")
                 
                 # 3. 「ン」で終わらないか
                 elif user_input.endswith('ン'):
@@ -156,12 +156,12 @@ if st.session_state.game_started and st.session_state.current_pokemon:
                     if st.session_state.current_pokemon:
                         if st.session_state.current_pokemon.endswith('ン'):
                             st.write(f"トレーナー: すまない、{st.session_state.current_pokemon}・・・")
-                            st.write("トレーナーが「ン」でおわるポケモンをだしたので、戦闘不能！あなたの勝ち！")
+                            st.write("トレーナーが「ン」でおわるポケモンをだしたので、戦闘不能！キミの勝ち！")
                         else:
                             st.write(f"トレーナー: {st.session_state.current_pokemon}")
-                            st.markdown("**※送信またはEnterを押してください**")
+                            st.markdown("**※もういちど「こたえる」をおしてね**")
                     else:
-                        st.write("トレーナー: ポケモンがみつかりませんでした。あなたの勝ちです！")
+                        st.write("トレーナーがポケモンをみつけられませんでした。キミの勝ち！")
 
     if st.button("やめる"):
         st.session_state.game_started = False
