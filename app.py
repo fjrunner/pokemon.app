@@ -1,9 +1,17 @@
 import pandas as pd
 import streamlit as st
 import requests
+from bgm import play_bgm_in_sidebar
+
+# サイドバーにBGMの再生コントロールを追加
+st.sidebar.header("BGM設定")
+play_bgm_in_sidebar()
+
+# サイドバーにBGMの権利表記を追加
+st.sidebar.caption("©2024 Pokémon. ©1995-2024 Nintendo/Creatures Inc./GAME FREAK inc.<br>これは「Pokémon Game Sound Library」の利用規約に同意し作成されたコンテンツです。", unsafe_allow_html=True)
 
 # CSVファイルのパスとカラム名
-csv_file = 'pokemon_list.csv'
+csv_file = 'pokemon_names_with_katakana.csv'
 katakana_column = 'katakana_name'
 
 # CSVを読み込む
@@ -151,7 +159,7 @@ if st.session_state.game_started and st.session_state.current_pokemon:
                             st.write("トレーナーが「ン」でおわるポケモンをだしたので、戦闘不能！あなたの勝ち！")
                         else:
                             st.write(f"トレーナー: {st.session_state.current_pokemon}")
-                            st.markdown("**※もういちど「こたえる」をおしてね**")
+                            st.markdown("**※送信またはEnterを押してください**")
                     else:
                         st.write("トレーナー: ポケモンがみつかりませんでした。あなたの勝ちです！")
 
@@ -218,50 +226,4 @@ if st.session_state.history:
         # 罫線を引く
         st.markdown("<hr style='margin: 0;'>", unsafe_allow_html=True)
 
-
-# タブを切り替えて表示する内容を変える
-tabs = ["ゲーム開始", "ルール"]
-selected_tab = st.sidebar.radio("", tabs)
-
-
-if selected_tab == "ゲーム開始":
-    # ここに既存の"ゲーム開始"のコードを埋め込み
-    pass
-
-elif selected_tab == "ルール":
-    st.write("""
-        **ゲームのルール:**
-        
-    **勝敗判定**  
-    ■以下のいずれかの条件を満たすと勝敗が決定します。  
-      - 「ン」で終わるポケモンを答えたとき  
-      - 「逃げる」ボタンを押したとき  
-
-    **入力制限**  
-      - 全角カタカナのみで入力してください。  
-      - 「ン」からは始められません。  
-      - 存在しないポケモンを入力した場合、エラーが出ます。  
-
-    **しりとりのつなぎ条件**  
-      - 濁音・半濁音はそのままつなげます。  
-    ・【例】レックウザ → ザングース  
-      - 小文字は大文字に変えてつなげます。  
-    ・【例】スナバァ → アーマルド  
-      - 長音は1文字前の文字でつなげます。  
-    ・【例】ファイヤー → ヤングース  
-      - メガ進化・キョダイマックス・ゲンシカイキ・リージョンフォーム(○○のすがた)などは含まれません。  
-      - フォルム/すがた/モード/スタイル/もよう/かた/かぞく/フェザー/めん違いも1種類とします。  
-      - アンノーン・ミノマダム・ロトム・ネクロズマ・ザシアン・ザマゼンタ・ガチグマも1種類とします。  
-
-    **ゲーム対象外ポケモン**  
-      - 以下のポケモンはゲーム対象外となります。  
-
-    ・ニドラン♂  
-    ・ニドラン♀  
-    ・ポリゴン2  
-    ・ポリゴンZ1. ゲーム開始を押すと、ランダムに選ばれた初期のポケモンが表示されます。
-        2. ユーザーは表示されたポケモンの名前の最後の文字から始まる新しいポケモンの名前を入力しなければなりません。
-        3. すでに使用されたポケモン名は再度使用できません。全てのポケモンが使われた場合、ゲームは終了します。
-        4. ゲームをいつでもリセットできます。リセットすると、使用済みのポケモンのリストとゲームの履歴がクリアされます。
-    """)
 
