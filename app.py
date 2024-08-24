@@ -108,7 +108,7 @@ with col2:
     st.markdown('<div class="custom-font">ポケモンしりとりゲーム</div>', unsafe_allow_html=True)  # マークダウン形式で書いたテキストを表示
 
 if not st.session_state.game_started:
-    if st.button("ゲーム開始"):
+    if st.button("はじめる"):
         st.session_state.game_started = True
         st.session_state.current_pokemon = get_random_pokemon()
 
@@ -123,23 +123,23 @@ if st.session_state.game_started and st.session_state.current_pokemon:
     # フォームを作成
     with st.form(key='pokemon_form', clear_on_submit=True):
         last_char = get_last_char(st.session_state.current_pokemon)
-        user_input = st.text_input("あなたの回答: ", placeholder=f"「{last_char}」から始まるポケモンの名前は？")
-        submit_button = st.form_submit_button(label="送信")
+        user_input = st.text_input("キミのターン: ", placeholder=f"「{last_char}」からはじまるポケモンのなまえは？")
+        submit_button = st.form_submit_button(label="こたえる")
 
         if submit_button:
             if user_input:
                 # 1. 頭文字が正しくしりとりになっているか
                 last_char = get_last_char(st.session_state.current_pokemon)
                 if not user_input.startswith(last_char):
-                    st.write(f"{last_char}から始まるポケモンを入力してください。")
+                    st.write(f"{last_char}からはじまるポケモンをいれてね。")
                 
                 # 2. 入力したポケモンが存在するか
                 elif not is_valid_pokemon(user_input):
-                    st.write("そのポケモンは存在しません。正しいポケモン名を入力してください。")
+                    st.write("そのポケモンはいません。ただしいポケモンのなまえをいれてね。")
                 
                 # 3. 「ン」で終わらないか
                 elif user_input.endswith('ン'):
-                    st.write("「ン」で終わるポケモンを入力した。めのまえが まっくらに なった！")
+                    st.write("これは「ン」でおわるポケモンだ。めのまえが まっくらに なった！")
                 
                 # すべての条件が満たされた場合
                 else:
@@ -148,18 +148,19 @@ if st.session_state.game_started and st.session_state.current_pokemon:
                     if st.session_state.current_pokemon:
                         if st.session_state.current_pokemon.endswith('ン'):
                             st.write(f"トレーナー: すまない、{st.session_state.current_pokemon}・・・")
-                            st.write("トレーナーが「ン」で終わるポケモンを出したので、戦闘不能！あなたの勝利！")
+                            st.write("トレーナーが「ン」でおわるポケモンをだしたので、戦闘不能！あなたの勝ち！")
                         else:
                             st.write(f"トレーナー: {st.session_state.current_pokemon}")
+                            st.markdown("**※送信またはEnterを押してください**")
                     else:
-                        st.write("トレーナー: ポケモンが見つかりませんでした。あなたの勝ちです！")
+                        st.write("トレーナー: ポケモンがみつかりませんでした。あなたの勝ちです！")
 
-    if st.button("逃げる"):
+    if st.button("やめる"):
         st.session_state.game_started = False
-        st.write("めのまえ が まっくら になった！")
+        st.write("またあそんでくれよな！")
         reset_game()
         # 「最初に戻る」ボタンを表示
-        if st.button("もう一度あそぶ"):
+        if st.button("はじめにもどる"):
             reset_game()
 
 # CSVファイルのidカラムを定義
@@ -187,7 +188,7 @@ def get_pokemon_image(pokemon_name):
 
     # これまでのやり取りの履歴を表示
 if st.session_state.history:
-    st.write("これまでのやり取り:")
+    st.write("これまでのやりとり:")
     for idx, (pokemon, user) in enumerate(st.session_state.history, 1):
         col1, col2, col3, col4 = st.columns([1, 2, 2, 6], gap="small", vertical_alignment="center")
         with col1:
@@ -207,7 +208,7 @@ if st.session_state.history:
         with col1:
             st.write(f"{idx * 2}")  # 自分の番号
         with col2:
-            st.write("あなた")
+            st.write("キミ")
         with col3:
             user_image_url = get_pokemon_image(user)
             if user_image_url:
@@ -216,6 +217,5 @@ if st.session_state.history:
             st.write(user)
         # 罫線を引く
         st.markdown("<hr style='margin: 0;'>", unsafe_allow_html=True)
-
 
 
